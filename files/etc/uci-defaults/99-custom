@@ -1,59 +1,22 @@
 #!/bin/sh
 
+# AX6000 Stable V1.1
 
-# LAN IP
+# 设置root密码
+echo "lkg030418" | passwd root
 
-uci set network.lan.ipaddr='192.168.80.1'
 
-
-# SSH
-
+# 开启SSH
 /etc/init.d/dropbear enable
 
 
-# 密码
-
-echo -e "lkg030418\nlkg030418" | passwd root
-
+# 开启Web管理
+/etc/init.d/uhttpd enable
 
 
-# Argon主题
-
+# 设置Argon主题
 uci set luci.main.mediaurlbase='/luci-static/argon'
-
-
 uci commit luci
-uci commit network
-
-
-
-# WiFi
-
-uci set wireless.radio0.country='CN'
-
-uci set wireless.radio1.country='CN'
-
-
-uci set wireless.radio1.channel='149'
-
-uci set wireless.radio1.htmode='HE80'
-
-
-
-uci set wireless.default_radio0.ssid='Ryan'
-
-uci set wireless.default_radio1.ssid='Ryan_5G'
-
-
-uci set wireless.default_radio0.key='TangoMoment'
-
-uci set wireless.default_radio1.key='TangoMoment'
-
-
-uci commit wireless
-
-
-wifi reload
 
 
 exit 0
