@@ -1,0 +1,97 @@
+name: Build AX6000 Stable
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+
+    - name: Clone ImmortalWrt
+
+      run: |
+        git clone --depth=1 \
+        -b v25.12.1 \
+        https://github.com/immortalwrt/immortalwrt.git openwrt
+
+
+    - name: Install packages
+
+      run: |
+        sudo apt update
+        sudo apt install -y \
+        build-essential \
+        clang \
+        flex \
+        bison \
+        g++ \
+        gawk \
+        gettext \
+        git \
+        libncurses-dev \
+        libssl-dev \
+        python3 \
+        rsync
+
+
+    - name: Feeds
+
+      working-directory: openwrt
+
+      run: |
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
+
+    - name: Copy config
+
+      run: |
+        cp .config openwrt/.config
+        cp diy.sh openwrt/
+        cp -r files openwrt/
+
+
+    - name: DIY
+
+      working-directory: openwrt
+
+      run: |
+        chmod +x diy.sh
+        ./diy.sh
+
+
+    - name: Defconfig
+
+      working-directory: openwrt
+
+      run: |
+        make defconfig
+
+
+    - name: Compile
+
+      working-directory: openwrt
+
+      run: |
+        make download -j8
+        make -j$(nproc)
+
+
+    - name: Upload
+
+      uses: actions/upload-artifact@v4
+
+      with:
+
+        name: AX6000-Stable
+
+        path:
+
+          openwrt/bin/targets/mediatek/filogic/*
