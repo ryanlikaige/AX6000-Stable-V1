@@ -18,7 +18,7 @@ jobs:
 
       run: |
         git clone --depth=1 \
-        -b v25.12.1 \
+        -b v25.12.2 \
         https://github.com/immortalwrt/immortalwrt.git openwrt
 
 
